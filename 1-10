@@ -1,0 +1,349 @@
+# 30-Day C Challenge — Exact code + line-by-line explanations (Part 1: Days 1–10)
+
+Nice — I’ll deliver the programs as **complete, compile-ready C code**, and I’ll **explain every line** using inline comments so you can immediately see the syntax and purpose of each statement.
+(I'm splitting the full 30-day explanation into parts so each message stays usable. This first message covers **Days 1–10**. I’ll continue with Days 11–20 and 21–30 in the next messages unless you prefer otherwise.)
+
+For each day: copy the code into `dayX.c`, compile with `gcc dayX.c -o dayX` and run `./dayX` (Linux/macOS) or `dayX.exe` on Windows with MinGW.
+
+---
+
+## Day 1 — Hello C!
+
+```c
+#include <stdio.h>          // include standard I/O header — gives printf, scanf, etc.
+
+/* main: program entry point */
+int main(void) {            // int: function returns an integer; main(void) means no command-line args used
+    printf("Hello, World!\n");                // printf: print string to stdout; "\n" is newline escape sequence
+    printf("Name: %s\n", "Gayathri Krishnan"); // "%s" format specifier for string literal
+    printf("Age: %d\n", 25);                  // "%d" format specifier for signed integer
+    printf("City: %s\n", "Chennai");          // prints another string
+    return 0;                                 // return 0 signals successful program termination
+}
+```
+
+**Notes about syntax used**
+
+* `#include <stdio.h>`: preprocessor directive — copy contents of stdio.h so you can use `printf`.
+* `int main(void)`: C program starts at `main`, returns an `int` to the OS.
+* `printf("format", args...)`: format string + conversion specifiers (`%s`, `%d`).
+* Every statement ends with a semicolon `;`.
+
+---
+
+## Day 2 — Basic Calculator (with input validation + modulus)
+
+```c
+#include <stdio.h>          // for printf, scanf, fprintf
+#include <stdlib.h>         // for EXIT_FAILURE / EXIT_SUCCESS constants
+
+int main(void) {
+    int num1, num2;        // declare two integer variables
+
+    printf("Enter first number: ");            // prompt user
+    if (scanf("%d", &num1) != 1) {             // scanf reads integer; returns number of items successfully read
+        fprintf(stderr, "Invalid input\n");    // fprintf to stderr for error message
+        return EXIT_FAILURE;                   // return non-zero for failure
+    }
+
+    printf("Enter second number: ");
+    if (scanf("%d", &num2) != 1) {
+        fprintf(stderr, "Invalid input\n");
+        return EXIT_FAILURE;
+    }
+
+    int sum = num1 + num2;                     // addition
+    int diff = num1 - num2;                    // subtraction
+    int prod = num1 * num2;                    // multiplication
+
+    printf("Sum = %d\n", sum);                 // print integer using %d
+    printf("Difference = %d\n", diff);
+    printf("Product = %d\n", prod);
+
+    if (num2 != 0) {                           // check to prevent division/modulus by zero
+        printf("Quotient = %d\n", num1 / num2);   // integer division
+        printf("Remainder = %d\n", num1 % num2);  // modulus operator
+    } else {
+        printf("Division and modulus by zero is undefined.\n");
+    }
+
+    return EXIT_SUCCESS;                       // indicate success (value 0)
+}
+```
+
+**Key syntax points**
+
+* `scanf("%d", &num)` reads into variable; `&` means "address of".
+* `num1 % num2` computes remainder (only valid for integer types).
+* `EXIT_SUCCESS` / `EXIT_FAILURE` from `<stdlib.h>` are portable return values.
+
+---
+
+## Day 3 — Temperature Converter (Celsius → Fahrenheit)
+
+```c
+#include <stdio.h>          // for printf, scanf
+#include <stdlib.h>         // for EXIT_FAILURE / EXIT_SUCCESS
+
+int main(void) {
+    float celsius, fahrenheit;                  // float for fractional temperatures
+
+    printf("Enter temperature in Celsius: ");
+    if (scanf("%f", &celsius) != 1) {           // "%f" reads float
+        fprintf(stderr, "Invalid input\n");
+        return EXIT_FAILURE;
+    }
+
+    fahrenheit = (celsius * 9.0f / 5.0f) + 32.0f; // formula: F = C * 9/5 + 32
+    printf("Fahrenheit = %.2f\n", fahrenheit);    // "%.2f" prints float with 2 decimal places
+
+    return EXIT_SUCCESS;
+}
+```
+
+**Syntax explanations**
+
+* Float arithmetic uses `9.0f` / `5.0f` to ensure floating-point division (not integer division).
+* `%.2f` is a format specifier showing two digits after the decimal.
+
+---
+
+## Day 4 — Odd or Even Checker
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int n;
+    printf("Enter an integer: ");
+    if (scanf("%d", &n) != 1) {
+        fprintf(stderr, "Invalid input\n");
+        return EXIT_FAILURE;
+    }
+
+    if (n % 2 == 0)                             // modulus operator; remainder 0 => even
+        printf("%d is even.\n", n);             // single statement if without braces is allowed
+    else
+        printf("%d is odd.\n", n);
+
+    return EXIT_SUCCESS;
+}
+```
+
+**Note:** Use braces `{}` when the `if` or `else` body contains multiple statements (recommended for clarity).
+
+---
+
+## Day 5 — Multiplication Table Generator
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int n;
+    printf("Enter a number: ");
+    if (scanf("%d", &n) != 1) return EXIT_FAILURE;
+
+    for (int i = 1; i <= 10; ++i) {              // for loop: init; condition; increment
+        printf("%d x %d = %d\n", n, i, n * i);   // print n multiplied by i
+    }
+
+    return EXIT_SUCCESS;
+}
+```
+
+**Syntax reminders**
+
+* `for (init; condition; increment)` is the canonical C loop.
+* `++i` increments `i` (pre-increment here; behavior same for this use).
+
+---
+
+## Day 6 — Sum of Natural Numbers (1..N)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    unsigned int n;                              // unsigned because N is non-negative
+    printf("Enter a positive integer N: ");
+    if (scanf("%u", &n) != 1) return EXIT_FAILURE;
+
+    unsigned long sum = 0;                       // sum potentially large, use larger type
+    for (unsigned int i = 1; i <= n; ++i) {
+        sum += i;                                // accumulate i into sum
+    }
+
+    printf("Sum from 1 to %u = %lu\n", n, sum);   // "%lu" prints unsigned long
+    return 0;
+}
+```
+
+**Important:** Choose types (`unsigned long`) to reduce overflow risk for moderately large `n`.
+
+---
+
+## Day 7 — Pattern Printing — Half Pyramid
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int rows;
+    printf("Enter number of rows: ");
+    if (scanf("%d", &rows) != 1 || rows < 1) {     // validate positive input
+        fprintf(stderr, "Invalid number of rows\n");
+        return EXIT_FAILURE;
+    }
+
+    for (int i = 1; i <= rows; ++i) {               // outer loop: each row
+        for (int j = 1; j <= i; ++j)                // inner loop: print '*' i times
+            putchar('*');                           // putchar writes single character
+        putchar('\n');                              // new line after row
+    }
+
+    return EXIT_SUCCESS;
+}
+```
+
+**Notes**
+
+* `putchar` prints a single character — handy for character-by-character output.
+* Nested loops are how you produce 2D patterns.
+
+---
+
+## Day 8 — Factorial Calculator (Iterative)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(void) {
+    int n;
+    printf("Enter a non-negative integer: ");
+    if (scanf("%d", &n) != 1 || n < 0) {            // ensure n >= 0
+        fprintf(stderr, "Invalid input\n");
+        return EXIT_FAILURE;
+    }
+
+    unsigned long long fact = 1ULL;                 // use unsigned long long for larger factorials
+    for (int i = 1; i <= n; ++i) {
+        fact *= (unsigned long long)i;              // multiply iteratively
+    }
+
+    printf("%d! = %llu\n", n, fact);                 // "%llu" prints unsigned long long
+    return EXIT_SUCCESS;
+}
+```
+
+**Syntax**
+
+* `ULL` suffix makes literal an `unsigned long long`.
+* Iterative factorial uses loop multiplication.
+
+---
+
+## Day 9 — Prime Number Checker
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>           // for bool, true, false
+
+int main(void) {
+    int n;
+    printf("Enter an integer (>1): ");
+    if (scanf("%d", &n) != 1) return EXIT_FAILURE;
+
+    if (n <= 1) {                                  // handle 0 and 1 and negatives
+        printf("%d is not prime\n", n);
+        return EXIT_SUCCESS;
+    }
+
+    bool is_prime = true;                          // assume prime until proven composite
+    for (int i = 2; (long long)i * i <= n; ++i) {  // check divisors up to sqrt(n)
+        if (n % i == 0) {                          // found divisor -> not prime
+            is_prime = false;
+            break;                                 // exit loop early
+        }
+    }
+
+    printf("%d is %s\n", n, is_prime ? "prime" : "not prime"); // conditional operator for message
+    return EXIT_SUCCESS;
+}
+```
+
+**Notes**
+
+* Loop condition `(long long)i * i <= n` prevents overflow and avoids `math.h`.
+* `bool` type from `<stdbool.h>` is clearer than `int` for boolean flags.
+
+---
+
+## Day 10 — List All Primes up to N (Sieve of Eratosthenes)
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+int main(void) {
+    int N;
+    printf("List primes up to: ");
+    if (scanf("%d", &N) != 1 || N < 2) {            // if N < 2, there are no primes to print
+        printf("No primes in this range\n");
+        return EXIT_SUCCESS;
+    }
+
+    // allocate boolean array of size N+1 (indexes 0..N)
+    bool *is_prime = malloc((N + 1) * sizeof(bool));
+    if (!is_prime) {                                // check memory allocation
+        fprintf(stderr, "Memory allocation failed\n");
+        return EXIT_FAILURE;
+    }
+
+    // initialize array: assume prime, then cross off multiples
+    for (int i = 0; i <= N; ++i)
+        is_prime[i] = true;
+    is_prime[0] = is_prime[1] = false;              // 0 and 1 are not prime
+
+    for (int p = 2; (long long)p * p <= N; ++p) {   // test p up to sqrt(N)
+        if (is_prime[p]) {                          // if p is still prime
+            for (int mult = p * p; mult <= N; mult += p) // cross off multiples starting at p*p
+                is_prime[mult] = false;
+        }
+    }
+
+    printf("Primes up to %d:\n", N);
+    for (int i = 2; i <= N; ++i) {
+        if (is_prime[i])
+            printf("%d ", i);
+    }
+    printf("\n");
+
+    free(is_prime);                                 // free dynamically allocated memory
+    return EXIT_SUCCESS;
+}
+```
+
+**Syntax & concept highlights**
+
+* `malloc` returns a `void*`; cast not required in C. Always check `malloc` result.
+* The Sieve is an efficient way to find all primes ≤ N: mark multiples as non-prime.
+
+---
+
+### What I’ll deliver next
+
+If everything above looks good, I’ll continue with **Days 11–20** (complete code + per-line comments) in the next message, then **Days 21–30** after that.
+Would you like me to (pick one, no need to answer if you want me to continue):
+
+* keep using this inline-comment style (what you see above), or
+* produce the code and then a separate numbered line-by-line textual explanation (instead of inline comments)?
+
+(If you don’t reply I’ll continue with the **same inline-comment style** for Days 11–20 in my next message.)
